@@ -1,76 +1,87 @@
 #include <stdio.h>
 #include <stdlib.h>
-  struct node{
-   int row,col,data;
-   struct node*next;
-   struct node*prev;
-  };
+struct node{
+   int data;
+   struct node*left;
+   struct node*right;
+};
 typedef struct node*NODE;
-NODE insertend (NODE start, int row, int col, int item)
-{
-    NODE temp , cur;
-    temp=(NODE)malloc(sizeof(struct node));
-    temp->row=row;
-    temp->data = item;
-    temp->next = NULL;
-    temp->prev = NULL;
-
-    if (start == NULL){
-        return temp;
-    }
-    cur = start;
-    while (cur->next!=NULL){
-        cur=cur->next;
-    }
-    cur->next=temp;
-    temp->prev=cur;
-    return start;
+NODE create_node(int item){
+    NODE temp=(NODE)malloc(sizeof(struct node));
+    temp->data=item;
+    temp->left=NULL;
+    temp->right=NULL;
+    return temp;
 }
-void display (NODE start){
-     NODE temp;
-     if(start == NULL){
-        printf("\nROW\tCOL\tDATA\n");
-        temp = start;
-        while (temp!=NULL){
-            printf("%d\t%d\t%d\n", temp->row,temp->col,temp->data);
-            temp=temp->next;
-        }
+NODE Insertbst(NODE root,int item){
+     if (root==NULL){
+        return create_node(item);
      }
+     if (item<root->data){
+        root->left = Insertbst(root->left,item);
+     }else{
+      root->left=Insertbst(root->right,item);
+     }
+     return root;
 }
-void displaymatrix(NODE start, int m, int n){
+void preorder (NODE root){
+   if(root!=NULL){
+    printf("%d\t",root->data);
+    preorder(root->left);
+    postorder(root->right);
 
-    NODE temp = start;
-    int i,j;
-   printf("\nThe sparse Matrix is : \n");
-
-   for (i=1;i<=m;i++){
-     for(j=1;j<=n;j++){
-        if(temp!=NULL && temp->row==i && temp->col==j){
-            printf("%d\t",temp->data);
-            temp = temp->next;
-        }else{
-            printf("0\t");
-        }
-     }
-     printf("\n");
+   }
+}
+void inorder (NODE root){
+   if(root!=NULL){
+    inorder(root->left);
+    postorder(root->right);
+    printf("%d\t",root->data);
+   }
+}
+void postorder (NODE root){
+   if(root!=NULL){
+    postorder(root->left);
+    postorder(root->right);
+    printf("%d\t", root->data);
    }
 }
 int main(){
-    NODE start = NULL;
-    int i,j,m,n,item;
-    printf("\nRead the order of the matrix: \n");
-    scanf("%d %d", &m, &n);
-    printf ("\nRead the matrix values : \n");
-    for(i=1;i<=m;i++){
-            for(j=1;j<=n;j++){
-        scanf("%d", &item);
-        if (item!=0){
-            start = insertend(start,i,j,item);
+    NODE root=NULL;
+    int ch,item;
+    while(1){
+
+        printf("\n1. Insert");
+        printf("\n2. Preorder");
+        printf("\n3. Inorder");
+        printf("\n4. Postorder");
+        printf("\n5. Exit");
+        printf("\nEnter your choice: ");
+        scanf("%d", &ch);
+        switch (ch){
+
+        case 1 :
+            printf("\nEnter element to insert: ");
+            scanf("%d", &item);
+            root = Insertbst(root,item);
+            break;
+        case 2 :
+            printf ("\n Preorder traversal: \n");
+            preorder(root);
+            break;
+        case 3 :
+            printf ("\n Inorder traversal: \n");
+            inorder(root);
+            break;
+        case 4 :
+            printf ("\n Inorder traversal: \n");
+            postorder(root);
+            break;
+        case 5 :
+            exit(0);
+        default:
+            printf("\nInvalid choice!");
         }
     }
-    }
-    display (start);
-    displaymatrix(start,m,n);
     return 0;
-
 }
